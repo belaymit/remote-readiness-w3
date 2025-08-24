@@ -29,34 +29,49 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Fetch all dashboard data
+  // Fetch dashboard data (excluding portfolio)
   const fetchDashboardData = useCallback(async () => {
     try {
-      const [dashboardData, portfolioData] = await Promise.all([
-        apiService.getDashboard(),
-        stocks.length > 0
-          ? apiService.getPortfolio(stocks.map((s) => s.symbol))
-          : Promise.resolve([]),
-      ]);
-
+      const dashboardData = await apiService.getDashboard();
       setFinancialSummary(dashboardData.summary);
       setExchangeRates(dashboardData.exchangeRates);
       setTransactions(dashboardData.recentTransactions);
-
-      if (portfolioData.length > 0) {
-        setStocks(portfolioData);
-      }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       // Keep existing data on error
     }
-  }, [stocks]);
+  }, []);
+
+  // Separate function to fetch portfolio data
+  const fetchPortfolioData = useCallback(async (stockSymbols: string[]) => {
+    if (stockSymbols.length === 0) return;
+    
+    try {
+      const portfolioData = await apiService.getPortfolio(stockSymbols);
+      setStocks(portfolioData);
+    } catch (error: unknown) {
+      console.error("Error fetching portfolio data:", error);
+      
+      // If it's a rate limit error, show a user-friendly message
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { status?: number } };
+        if (axiosError.response?.status === 429) {
+          console.warn("API rate limit reached. Using cached/mock data.");
+        }
+      }
+    }
+  }, []);
 
   // Refresh data function
   const handleRefreshData = useCallback(async () => {
     setIsRefreshing(true);
     try {
       await fetchDashboardData();
+
+      // Refresh portfolio data if we have stocks
+      if (stocks.length > 0) {
+        await fetchPortfolioData(stocks.map(s => s.symbol));
+      }
 
       // Also refresh exchange rates for current base currency
       if (baseCurrency !== "USD") {
@@ -68,7 +83,7 @@ export default function Dashboard() {
     } finally {
       setIsRefreshing(false);
     }
-  }, [fetchDashboardData, baseCurrency]);
+  }, [fetchDashboardData, fetchPortfolioData, stocks, baseCurrency]);
 
   // Initial data load
   useEffect(() => {
@@ -97,6 +112,12 @@ export default function Dashboard() {
   };
 
   const handleAddStock = async (symbol: string) => {
+    // Check if stock already exists
+    if (stocks.some(stock => stock.symbol === symbol)) {
+      console.warn(`Stock ${symbol} already exists in portfolio`);
+      return;
+    }
+
     try {
       const newStock = await apiService.getStock(symbol);
       setStocks((prev) => [...prev, newStock]);

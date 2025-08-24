@@ -1,4 +1,4 @@
-// Export all dashboard components
+// Component exports for the finance dashboard
 export { DashboardHeader } from './DashboardHeader';
 export { FinancialSummary } from './FinancialSummary';
 export { ExchangeRates } from './ExchangeRates';

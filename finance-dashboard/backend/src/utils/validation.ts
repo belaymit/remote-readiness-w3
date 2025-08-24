@@ -9,9 +9,9 @@ export function isValidCurrency(currency: string): boolean {
 
 // Stock symbol validation
 export function isValidStockSymbol(symbol: string): boolean {
-  // Basic validation: 1-5 uppercase letters
+  // Basic validation: 1-5 uppercase letters (must be already uppercase)
   const symbolRegex = /^[A-Z]{1,5}$/;
-  return symbolRegex.test(symbol.toUpperCase());
+  return symbolRegex.test(symbol);
 }
 
 // Transaction category validation
@@ -47,8 +47,10 @@ export function createValidationError(field: string, message: string) {
 
 // Type guards
 export function isTransaction(obj: any): obj is import('../types').Transaction {
+  if (!obj || obj === null || obj === undefined) {
+    return false;
+  }
   return (
-    obj &&
     typeof obj.id === 'string' &&
     typeof obj.userId === 'string' &&
     isValidDate(obj.date) &&
@@ -61,8 +63,10 @@ export function isTransaction(obj: any): obj is import('../types').Transaction {
 }
 
 export function isStock(obj: any): obj is import('../types').Stock {
+  if (!obj || obj === null || obj === undefined) {
+    return false;
+  }
   return (
-    obj &&
     typeof obj.symbol === 'string' &&
     typeof obj.name === 'string' &&
     isValidAmount(obj.currentPrice) &&
@@ -75,8 +79,10 @@ export function isStock(obj: any): obj is import('../types').Stock {
 }
 
 export function isExchangeRate(obj: any): obj is import('../types').ExchangeRate {
+  if (!obj || obj === null || obj === undefined) {
+    return false;
+  }
   return (
-    obj &&
     isValidCurrency(obj.currency) &&
     isValidAmount(obj.rate) &&
     isValidAmount(obj.change24h) &&

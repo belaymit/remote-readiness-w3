@@ -38,7 +38,7 @@ export function DashboardHeader({ user, onRefresh, isRefreshing }: DashboardHead
             <button 
               onClick={onRefresh}
               disabled={isRefreshing}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed cursor-pointer text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2"
             >
               {isRefreshing && (
                 <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">

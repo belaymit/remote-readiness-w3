@@ -88,7 +88,7 @@ export function ExchangeRates({
 
       <div className="mt-4 pt-4 border-t border-gray-200">
         <p className="text-xs text-gray-500">
-          Last updated: {lastUpdated.toLocaleTimeString()}
+          Last updated: {new Date(lastUpdated).toLocaleTimeString()}
         </p>
       </div>
     </div>

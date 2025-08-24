@@ -139,3 +139,8 @@ export interface ErrorResponse {
   };
   timestamp: Date;
 }
+
+// Re-export validation utilities
+export * from '../utils/validation';
+export * from '../utils/typeGuards';
+export * from '../utils/validationSchemas';
