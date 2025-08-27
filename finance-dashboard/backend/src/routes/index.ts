@@ -1,1 +1,0 @@
-// Placeholder for API routes - will be implemented in tasks 4-7
