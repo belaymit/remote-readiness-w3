@@ -1,0 +1,1 @@
+// Placeholder for middleware - will be implemented in task 3.1
